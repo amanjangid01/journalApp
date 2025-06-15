@@ -9,6 +9,8 @@ import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,30 +22,32 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public List<UserEntity> getAllUser(){
-        return userService.getAll();
+    @Autowired
+    private UserRepository userRepository;
 
-    }
 
-    @PostMapping
-    public void createUser(@RequestBody UserEntity user){
-        userService.saveEntry(user);
-    }
+    @PutMapping()
+    public ResponseEntity<?> updateUser(@RequestBody UserEntity user){
 
-    @PutMapping("/{userName}")
-    public ResponseEntity<?> updateUser(@RequestBody UserEntity user,@PathVariable String userName){
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
         UserEntity userInDb=userService.findByUserName(userName);
-        if(userInDb!=null){
-            userInDb.setUserName(user.getUserName());
-            userInDb.setPassword(user.getPassword());
-            userService.saveEntry(userInDb);
-        }
+        userInDb.setUserName(user.getUserName());
+        userInDb.setPassword(user.getPassword());
+        userService.saveNewUser(userInDb);
+
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @DeleteMapping()
+    public ResponseEntity<?> deleteUser(@RequestBody UserEntity user){
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        userRepository.deleteByUserName(authentication.getName());
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 
 }
