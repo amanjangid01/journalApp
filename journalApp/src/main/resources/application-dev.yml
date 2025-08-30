@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: journalApp
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: journaldb
+      auto-index-creation: true
+  security:
+    user:
+      name: user
+      password: user@123
+  main:
+    allow-circular-references: true
+
+server:
+  port: 8081
+
+weather:
+  api:
+    key: 4e98eb755cd9549c10d05030ae26184a
+
+# Uncomment and use the following if you want to use a MongoDB URI instead of host/port:
+# spring:
+#   data:
+#     mongodb:
+#       uri: mongodb+srv://journalApp:su77ma61n@cluster0.xfbetyc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
